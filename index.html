@@ -7,7 +7,7 @@
 
   <body>
     <div class="container">
-      <ul class="comments">
+      <ul class="comments" id="list">
         <li class="comment">
           <div class="comment-header">
             <div>Глеб Фокин</div>
@@ -48,22 +48,77 @@
           type="text"
           class="add-form-name"
           placeholder="Введите ваше имя"
+          id="name-input"
         />
         <textarea
           type="textarea"
           class="add-form-text"
           placeholder="Введите ваш коментарий"
           rows="4"
+          id="text-area"
         ></textarea>
         <div class="add-form-row">
-          <button class="add-form-button">Написать</button>
+          <button class="add-form-button" id="add-button">Написать</button>
         </div>
       </div>
     </div>
   </body>
 
   <script>
-    // Код писать здесь
+    const listElement = document.getElementById("list");
+    const buttonElement = document.getElementById("add-button");
+    const nameInputElement = document.getElementById("name-input");
+    const textAreaInputElement = document.getElementById("text-area");
+    /*let myDate = new Date();
+    let day = myDate.getDate();
+    let month = myDate.getMonth();
+    if (day < 10) {
+      day = '0' + day;
+    }
+    if (month < 10) {
+      month = '0' + month;
+    }
+    let currentDate = day + '.' + month + '.' + myDate.getFullYear() + ' ' + myDate.getHours() + ':' + myDate.getMinutes();
+*/
+  let currentData = {day: 'numeric', month: 'numeric', year: '2-digit'};
+  let currentTime = {hour: 'numeric', minute: 'numeric'};
+  let myDate = new Date();
+
+    buttonElement.addEventListener('click', () => {
+      const oldList = listElement.innerHTML;
+
+      nameInputElement.classList.remove("error");
+      if (nameInputElement.value === '') {
+        nameInputElement.classList.add("error");
+        return;
+      }
+      textAreaInputElement.classList.remove("error");
+      if (textAreaInputElement.value === '') {
+        textAreaInputElement.classList.add("error");
+        return;
+      }
+      
+      listElement.innerHTML = oldList + `<li class="comment">
+          <div class="comment-header">
+            <div>${nameInputElement.value}</div>
+            <div>${myDate.toLocaleString("ru-RU", currentData)} ${myDate.toLocaleTimeString("ru-RU", currentTime)}</div>
+          </div>
+          <div class="comment-body">
+            <div class="comment-text">
+              ${textAreaInputElement.value}
+            </div>
+          </div>
+          <div class="comment-footer">
+            <div class="likes">
+              <span class="likes-counter">0</span>
+              <button class="like-button"></button>
+            </div>
+          </div>
+        </li>`
+        nameInputElement.value = '';
+        textAreaInputElement.value = '';
+    })
+
     console.log("It works!");
   </script>
 </html>
