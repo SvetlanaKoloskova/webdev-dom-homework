@@ -34,7 +34,7 @@ const renderComments = () => {
           <div>${comment.date}</div>
         </div>
         <div class="comment-body">
-          <div class="comment-text">
+          <div data-index="${index}" class="comment-text">
             ${comment.text}
           </div>
         </div>
@@ -48,6 +48,17 @@ const renderComments = () => {
   }).join("");
 
   listElement.innerHTML = commentsHtml;
+
+  const commentsElements = document.querySelectorAll(".comment-text");
+
+  for (const commentElement of commentsElements) {
+    commentElement.addEventListener('click', () => {
+      const index = commentElement.dataset.index;
+      const commentText = comments[index].text;
+      const commentName = comments[index].name;
+      textAreaInputElement.value = '> ' + commentText + '\n\n' + commentName;
+    })
+  }
 
   const likesElements = document.querySelectorAll(".like-button");
 
@@ -85,13 +96,13 @@ buttonElement.addEventListener('click', () => {
   }
 
   comments.push({
-    name: nameInputElement.value,
+    name: nameInputElement.value.replaceAll("<", "&lt;").replaceAll(">", "&gt;"),
     date: `${myDate.toLocaleString("ru-RU", currentData)} ${myDate.toLocaleTimeString("ru-RU", currentTime)}`,
-    text: textAreaInputElement.value,
+    text: textAreaInputElement.value.replaceAll("<", "&lt;").replaceAll(">", "&gt;"),
     counterLike: 0,
     draw: "",
     color: false,
-  })
+  });
 
   renderComments();
 
