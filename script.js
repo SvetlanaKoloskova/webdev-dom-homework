@@ -6,25 +6,9 @@ const textAreaInputElement = document.getElementById("text-area");
 let currentData = { day: 'numeric', month: 'numeric', year: '2-digit' };
 let currentTime = { hour: 'numeric', minute: 'numeric' };
 let myDate = new Date();
+let comments = [];
 
-const comments = [
-  {
-    name: "Глеб Фокин",
-    date: "12.02.22 12:18",
-    text: "Это будет первый комментарий на этой странице",
-    counterLike: 3,
-    draw: "",
-    color: false,
-  },
-  {
-    name: "Варвара Н.",
-    date: "13.02.22 19:22",
-    text: "Мне нравится как оформлена эта страница! ❤",
-    counterLike: 75,
-    draw: "-active-like",
-    color: true,
-  },
-];
+fetchGet();
 
 const renderComments = () => {
   const commentsHtml = comments.map((comment, index) => {
@@ -79,11 +63,7 @@ const renderComments = () => {
   };
 };
 
-renderComments();
-
 buttonElement.addEventListener('click', () => {
-  const oldList = listElement.innerHTML;
-
   nameInputElement.classList.remove("error");
   if (nameInputElement.value === '') {
     nameInputElement.classList.add("error");
@@ -95,19 +75,46 @@ buttonElement.addEventListener('click', () => {
     return;
   }
 
-  comments.push({
-    name: nameInputElement.value.replaceAll("<", "&lt;").replaceAll(">", "&gt;"),
-    date: `${myDate.toLocaleString("ru-RU", currentData)} ${myDate.toLocaleTimeString("ru-RU", currentTime)}`,
-    text: textAreaInputElement.value.replaceAll("<", "&lt;").replaceAll(">", "&gt;"),
-    counterLike: 0,
-    draw: "",
-    color: false,
-  });
+  fetch(
+    'https://webdev-hw-api.vercel.app/api/v1/S/comments',
+    {
+      method: "POST",
+      body: JSON.stringify({
+        name: nameInputElement.value,
+        text: textAreaInputElement.value,
+      })
+    })
+    .then(() => {
+      return fetchGet();
+    })
+    .then(() => {
+      nameInputElement.value = '';
+      textAreaInputElement.value = '';
+    })
+});
 
-  renderComments();
+function fetchGet() {
+  return fetch(
+    'https://webdev-hw-api.vercel.app/api/v1/S/comments',
+    {
+      method: "GET"
+    })
+    .then((response) => {
+      return response.json();
+    })
+    .then((responseData) => {
+      const appComments = responseData.comments.map((comment) => {
+        return {
+          name: comment.author.name,
+          date: new Date(comment.date).toLocaleString(),
+          text: comment.text,
+          counterLike: comment.likes,
+          draw: "",
+          color: false,
+        }
+      });
 
-  nameInputElement.value = '';
-  textAreaInputElement.value = '';
-})
-
-console.log("It works!");
+      comments = appComments;
+      renderComments();
+    })
+}
