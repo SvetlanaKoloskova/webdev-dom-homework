@@ -2,6 +2,8 @@ const listElement = document.getElementById("list");
 const buttonElement = document.getElementById("add-button");
 const nameInputElement = document.getElementById("name-input");
 const textAreaInputElement = document.getElementById("text-area");
+const loadingCommentsElement = document.getElementById("loading-comments");
+const addFormElement = document.getElementById("add-form");
 
 let currentData = { day: 'numeric', month: 'numeric', year: '2-digit' };
 let currentTime = { hour: 'numeric', minute: 'numeric' };
@@ -9,6 +11,8 @@ let myDate = new Date();
 let comments = [];
 
 fetchGet();
+
+buttonElement.addEventListener('click', addComment);
 
 const renderComments = () => {
   const commentsHtml = comments.map((comment, index) => {
@@ -63,7 +67,8 @@ const renderComments = () => {
   };
 };
 
-buttonElement.addEventListener('click', () => {
+function addComment() {
+
   nameInputElement.classList.remove("error");
   if (nameInputElement.value === '') {
     nameInputElement.classList.add("error");
@@ -75,8 +80,10 @@ buttonElement.addEventListener('click', () => {
     return;
   }
 
+  addFormElement.classList.add("-display-none");
+
   fetch(
-    'https://webdev-hw-api.vercel.app/api/v1/S/comments',
+    'https://webdev-hw-api.vercel.app/api/v1/Svetlana/comments',
     {
       method: "POST",
       body: JSON.stringify({
@@ -85,17 +92,23 @@ buttonElement.addEventListener('click', () => {
       })
     })
     .then(() => {
+
       return fetchGet();
     })
     .then(() => {
       nameInputElement.value = '';
       textAreaInputElement.value = '';
+      addFormElement.classList.remove("-display-none");
     })
-});
+}
 
 function fetchGet() {
+
+  buttonElement.disabled = true;
+  loadingCommentsElement.classList.remove("-display-none");
+
   return fetch(
-    'https://webdev-hw-api.vercel.app/api/v1/S/comments',
+    'https://webdev-hw-api.vercel.app/api/v1/Svetlana/comments',
     {
       method: "GET"
     })
@@ -113,8 +126,9 @@ function fetchGet() {
           color: false,
         }
       });
-
       comments = appComments;
+      buttonElement.disabled = false;
+      loadingCommentsElement.classList.add("-display-none");
       renderComments();
-    })
+    });
 }

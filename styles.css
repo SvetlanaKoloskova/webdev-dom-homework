@@ -140,3 +140,7 @@ body {
   .error {
     background-color: red;
   }
+  
+  .-display-none {
+    display: none;
+  }
