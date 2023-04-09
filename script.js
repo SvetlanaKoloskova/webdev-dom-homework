@@ -80,7 +80,7 @@ function addComment() {
     return;
   }
 
-  addFormElement.classList.add("-display-none");
+  //addFormElement.classList.add("-display-none");
 
   fetch(
     'https://webdev-hw-api.vercel.app/api/v1/Svetlana/comments',
@@ -89,16 +89,34 @@ function addComment() {
       body: JSON.stringify({
         name: nameInputElement.value,
         text: textAreaInputElement.value,
+        forceError: true,
       })
     })
-    .then(() => {
-
-      return fetchGet();
+    .then((response) => {
+      if (response.status === 500) {
+        throw new Error('Сервер сломался');
+      } else if (response.status === 400) {
+        throw new Error('Введены некорректные данные');
+      } else {
+        return fetchGet();
+      }
     })
     .then(() => {
       nameInputElement.value = '';
       textAreaInputElement.value = '';
-      addFormElement.classList.remove("-display-none");
+      //addFormElement.classList.remove("-display-none");
+    })
+    .catch((error) => {
+      if (error.message === 'Сервер сломался') {
+        alert('Сервер сломался, попробуй позже');
+        console.warn(error);
+      } else if (error.message === 'Введены некорректные данные') {
+        alert('Имя и комментарий должны быть не короче 3 символов');
+        console.warn(error);
+      } else {
+        alert('Кажется, у вас сломался интернет, попробуйте позже...');
+        console.warn(error);
+      }
     })
 }
 
@@ -113,7 +131,11 @@ function fetchGet() {
       method: "GET"
     })
     .then((response) => {
-      return response.json();
+      if (response.status === 500) {
+        throw new Error('Сервер сломался');
+      } else {
+        return response.json();
+      }
     })
     .then((responseData) => {
       const appComments = responseData.comments.map((comment) => {
@@ -130,5 +152,13 @@ function fetchGet() {
       buttonElement.disabled = false;
       loadingCommentsElement.classList.add("-display-none");
       renderComments();
-    });
+    })
+    .catch((error) => {
+      if (error.message === 'Сервер сломался') {
+        alert('Сервер сломался, попробуй позже');
+      } else {
+        alert('Кажется, у вас сломался интернет, попробуйте позже...');
+        console.warn(error);
+      }
+    })
 }
