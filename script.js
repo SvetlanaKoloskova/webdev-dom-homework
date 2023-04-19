@@ -43,6 +43,8 @@ function fetchGet() {
     .then((response) => {
       if (response.status === 500) {
         throw new Error('Сервер сломался');
+      } else if (response.status === 401) {
+        throw new Error("Нет авторизации");
       } else {
         return response.json();
       }
@@ -80,6 +82,8 @@ function fetchPost() {
         throw new Error('Сервер сломался');
       } else if (response.status === 400) {
         throw new Error('Введены некорректные данные');
+      } else if (response.status === 401) {
+        throw new Error("Нет авторизации");
       } else {
         return fetchGet();
       }
@@ -95,6 +99,8 @@ function fetchPost() {
       } else if (error.message === 'Введены некорректные данные') {
         alert('Имя и комментарий должны быть не короче 3 символов');
         console.warn(error);
+      } else if (error.message === 'Нет авторизации') {
+        alert('Авторизируйтесь прежде чем добавлять комментарии');
       } else {
         alert('Кажется, у вас сломался интернет, попробуйте позже...');
         console.warn(error);
