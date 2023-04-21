@@ -1,6 +1,6 @@
 import { fetchGet } from "./index.js";
 
-const host = "https://webdev-hw-api.vercel.app/api/v2/Svetlana/comments";
+const host = "https://webdev-hw-api.vercel.app/api/v2/Svetlana1/comments";
 
 export function getComments({ token }) {
     return fetch(
