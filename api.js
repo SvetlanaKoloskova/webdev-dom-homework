@@ -1,9 +1,8 @@
-const host = "https://webdev-hw-api.vercel.app/api/v2/svetlana-koloskova/comments";
-//https://webdev-hw-api.vercel.app/api/v1/Svetlana/comments
+import { fetchGet } from "./index.js";
 
-const token = "Bearer asb4c4boc86gasb4c4boc86g37w3cc3bo3b83k4g37k3bk3cg3c03ck4k";
+const host = "https://webdev-hw-api.vercel.app/api/v2/Svetlana/comments";
 
-function get() {
+export function getComments({ token }) {
     return fetch(
         host,
         {
@@ -12,9 +11,18 @@ function get() {
                 Authorization: token,
             },
         })
+        .then((response) => {
+            if (response.status === 500) {
+                throw new Error('Сервер сломался');
+            } else if (response.status === 401) {
+                throw new Error('Нет авторизации');
+            } else {
+                return response.json();
+            }
+        })
 }
 
-function post(postName, postText) {
+export function addComments({ token }, name, text) {
     return fetch(
         host,
         {
@@ -23,11 +31,71 @@ function post(postName, postText) {
                 Authorization: token,
             },
             body: JSON.stringify({
-                name: postName,
-                text: postText,
+                name: name,
+                text: text,
                 //forceError: true,
             })
         })
+        .then((response) => {
+            if (response.status === 500) {
+                throw new Error('Сервер сломался');
+            } else if (response.status === 400) {
+                throw new Error('Введены некорректные данные');
+            } else if (response.status === 401) {
+                throw new Error('Нет авторизации');
+            } else {
+                return fetchGet();
+            }
+        })
 }
 
-export { get, post };
+export function loginUser({ login, password }) {
+    return fetch(
+        "https://webdev-hw-api.vercel.app/api/user/login",
+        {
+            method: "POST",
+            body: JSON.stringify({
+                login,
+                password,
+            })
+        })
+        .then((response) => {
+            if (response.status === 400) {
+                throw new Error('Неверный логин или пароль')
+            };
+            /*} else if (response.status === 400) {
+                throw new Error('Введены некорректные данные');
+            } else if (response.status === 401) {
+                throw new Error('Нет авторизации');
+            } else {
+                return fetchGet();
+            }*/
+            return response.json();
+        })
+}
+
+export function registerUser({ login, password, name }) {
+    return fetch(
+        "https://webdev-hw-api.vercel.app/api/user",
+        {
+            method: "POST",
+            body: JSON.stringify({
+                login,
+                password,
+                name,
+            })
+        })
+        .then((response) => {
+            if (response.status === 400) {
+                throw new Error('Такой пользователь уже существует')
+            };
+            /*} else if (response.status === 400) {
+                throw new Error('Введены некорректные данные');
+            } else if (response.status === 401) {
+                throw new Error('Нет авторизации');
+            } else {
+                return fetchGet();
+            }*/
+            return response.json();
+        })
+}
