@@ -1,12 +1,12 @@
 import { addComments, getComments } from "./api.js";
 import { renderLoginComponent } from "./components/login-component.js";
+import { format } from "date-fns";
 
-let currentData = { day: 'numeric', month: 'numeric', year: '2-digit' };
-let currentTime = { hour: 'numeric', minute: 'numeric' };
-let myDate = new Date();
+//let currentData = { day: 'numeric', month: 'numeric', year: '2-digit' };
+//let currentTime = { hour: 'numeric', minute: 'numeric' };
+//let myDate = new Date();
 let comments = [];
 
-const host = "https://webdev-hw-api.vercel.app/api/v2/Svetlana/comments";
 let token = "Bearer asb4c4boc86gasb4c4boc86g37w3cc3bo3b83k4g37k3bk3cg3c03ck4k";
 
 token = null;
@@ -32,7 +32,7 @@ function renderComments() {
     return `<li class="comment">
         <div class="comment-header">
           <div>${comment.name}</div>
-          <div>${comment.date}</div>
+          <div>${format(new Date(comment.date), "yyyy-MM-dd hh.mm.ss")}</div>
         </div>
         <div class="comment-body">
           <div data-index="${index}" class="comment-text">
@@ -150,7 +150,7 @@ function fetchGet() {
       const appComments = responseData.comments.map((comment) => {
         return {
           name: comment.author.name,
-          date: new Date(comment.date).toLocaleString(),
+          date: new Date(comment.date), //.toLocaleString()
           text: comment.text,
           counterLike: comment.likes,
           draw: "",
